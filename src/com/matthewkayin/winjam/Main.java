@@ -4,7 +4,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.event.*;
-import com.matthewkayin.util.TextFile;
+
+import com.matthewkayin.util.SoundManager;
 
 public class Main extends JPanel{
 
@@ -29,6 +30,8 @@ public class Main extends JPanel{
     private final int S = 1;
     private final int A = 2;
     private final int D = 3;
+
+    private SoundManager s;
 
     public Main(){
 
@@ -92,6 +95,10 @@ public class Main extends JPanel{
                     case KeyEvent.VK_D:
                         keydown[D] = true;
                         break;
+
+                    case KeyEvent.VK_SPACE:
+                        s.playSound("beep");
+                        break;
                 }
             }
 
@@ -125,6 +132,11 @@ public class Main extends JPanel{
 
             keydown[i] = false;
         }
+
+        s = new SoundManager();
+        s.loadSound("beep.wav", "beep");
+        s.loadSound("funk.wav", "bgm");
+        s.playSound("bgm");
 
         running = false;
     }
