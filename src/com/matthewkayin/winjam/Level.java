@@ -2,6 +2,11 @@ package com.matthewkayin.winjam;
 
 public class Level{
 
+    public double playerangle;
+    public double playeranglespeed;
+    public double distfromplanet;
+    public boolean freeing = false;
+
     public class Entity {
 
         private double x;
@@ -101,22 +106,6 @@ public class Level{
             y += v;
         }
 
-        public void update(){
-
-            vx += ax;
-            vy += ay;
-            if(vy > 5){
-
-                vy = 7;
-            }
-            if(vx > 5){
-
-                vx = 7;
-            }
-            x += vx;
-            y += vy;
-        }
-
         public double getMass(){
 
             return (4.0 / 3.0) * Math.PI * (w / 2) * (w / 2) * (w / 3);
@@ -138,8 +127,7 @@ public class Level{
         bigplanet.setPos(400, 25);
         player = new Entity();
         player.setSize(40, 40);
-        player.setPos(300, 650);
-        player.setPos(550, 650);
+        player.setPos(400, 600);
 
         end = new Entity();
         end.setSize(50, 50);
@@ -170,8 +158,98 @@ public class Level{
 
     public void update() {
 
-        player.update();
+        double centerx = planet.getX() + (planet.getWidth() / 2);
+        double centery = planet.getY() + (planet.getHeight() / 2);
 
+        if(player.orbiting && !freeing){
+
+            playerangle += playeranglespeed;
+            player.setX(centerx + distfromplanet*Math.cos(playerangle) - (player.getWidth() / 2));
+            player.setY(centery + distfromplanet*Math.sin(playerangle) - (player.getHeight() / 2));
+
+        }else{
+
+            player.incX(player.getVx());
+            player.incY(player.getVy());
+        }
+
+        double planetRadius = (planet.getWidth() / 2) * 1.5;;
+        double playerx = player.getX() + (player.getWidth() / 2);
+        double playery = player.getY() + (player.getHeight() / 2);
+        double pdirx = playerx - centerx;
+        double pdiry = playery - centery;
+        double pdist = Math.sqrt((pdirx * pdirx) + (pdiry * pdiry));
+        double vmag = Math.sqrt((player.getVx() * player.getVx()) + (player.getVy() * player.getVy()));
+        double angle = Math.acos( (pdirx*player.getVx() + pdiry*player.getVy()) / (pdist * vmag) );
+        angle *= (180 / Math.PI);
+        angle = 180 - angle;
+
+        if(pdist <= planetRadius){
+
+            if(!freeing){
+
+                if(angle >= 75){
+
+                    double oldvy = player.getVy();
+                    double oldvx = player.getVx();
+                    player.setVx(0);
+                    player.setVy(0);
+                    playerangle = Math.atan(pdiry / pdirx);
+                    playeranglespeed =  (2 * Math.PI) / ((2 * Math.PI * pdist) / vmag );
+                    int pasmod = 1;
+                    if(pdirx > 0){
+
+                        if(pdiry < 0){
+
+                            if( oldvy < 0 || (oldvx < 0 && Math.abs(oldvx) > Math.abs(oldvy)) ){
+
+                                pasmod = -1;
+                            }
+
+                        }else{
+
+                            if( (Math.abs(oldvx) > Math.abs(oldvy) && oldvx > 0) || (Math.abs(oldvx) < Math.abs(oldvy) && oldvy < 0) ){
+
+                                pasmod = -1;
+                            }
+                        }
+
+                    }if(pdirx < 0){
+
+                        if(pdiry < 0){
+
+                            if( (oldvy > 0 && oldvx < 0) || (oldvy > 0 && Math.abs(oldvy) > Math.abs(oldvx)) ){
+
+                                pasmod = -1;
+                            }
+
+                        }else{
+
+                            if( (oldvy > 0 && oldvx > 0) || (oldvx > 0 && Math.abs(oldvx) < Math.abs(oldvy)) ){
+
+                                pasmod = -1;
+                            }
+                        }
+
+                        playerangle += Math.PI;
+                    }
+                    playeranglespeed *= pasmod;
+                    distfromplanet = pdist;
+                    player.orbiting = true;
+                }
+            }
+
+        }else{
+
+            if(freeing){
+
+                freeing = false;
+                player.orbiting = false;
+            }
+        }
+
+
+        /*
         double planetRadius = (planet.getWidth() / 2) * 1.5;
         double centerx = planet.getX() + (planet.getWidth() / 2);
         double centery = planet.getY() + (planet.getHeight() / 2);
@@ -220,7 +298,7 @@ public class Level{
             impulse(player.getX() + vdirx, player.getY() + vdiry, g);
         }
 
-        if
+        if*/
     }
 
     public Entity getPlanet(){

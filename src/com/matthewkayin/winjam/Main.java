@@ -47,7 +47,22 @@ public class Main extends JPanel{
 
             public void mousePressed(MouseEvent e){
 
-                level.impulse(mousex, mousey,  4.0);
+                if(level.getPlayer().orbiting){
+
+                    level.freeing = true;
+                    int mod = 1;
+                    if(level.playeranglespeed < 0){
+
+                        mod = -1;
+                    }
+                    double speed = (2 * Math.PI * level.distfromplanet) / ((2 * Math.PI) / (level.playeranglespeed ));
+                    System.out.println(level.playerangle);
+                    level.impulse(level.getPlayer().getX() + (speed * Math.cos(level.playerangle + ((Math.PI / 2) * mod) )), level.getPlayer().getY() + (speed * Math.sin(level.playerangle + ((Math.PI / 2) * mod))), speed);
+
+                }else{
+
+                    level.impulse(mousex, mousey,  6.0);
+                }
             }
 
             public void mouseReleased(MouseEvent e){
