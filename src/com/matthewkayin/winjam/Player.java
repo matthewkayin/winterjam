@@ -60,7 +60,9 @@ public class Player{
 
         else{
 
-            xSpeed = Math.sqrt((maxPlayerSpeed * maxPlayerSpeed) - (ySpeed * ySpeed));
+            double percentOver = ((par * par) + (ySpeed * ySpeed)) / (maxPlayerSpeed * maxPlayerSpeed);
+            xSpeed = Math.sqrt((par * par) / percentOver);
+            ySpeed = Math.sqrt((ySpeed * ySpeed) / percentOver);
         }
     }
 
@@ -72,7 +74,9 @@ public class Player{
 
         else{
 
-            xSpeed = Math.sqrt((maxPlayerSpeed * maxPlayerSpeed) - (xSpeed * xSpeed));
+            double percentOver = ((par * par) + (xSpeed * xSpeed)) / (maxPlayerSpeed * maxPlayerSpeed);
+            xSpeed = Math.sqrt((xSpeed * xSpeed) / percentOver);
+            ySpeed = Math.sqrt((par * par) / percentOver);
         }
     }
 
