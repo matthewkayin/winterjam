@@ -50,7 +50,7 @@ public class Main extends JPanel{
 
             public void mousePressed(MouseEvent e){
 
-                level.impulse(mousex, mousey, 5.0);
+                level.impulse(mousex, mousey,  4.0);
             }
 
             public void mouseReleased(MouseEvent e){
