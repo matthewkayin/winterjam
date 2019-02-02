@@ -36,15 +36,12 @@ public class Main extends JPanel{
     private SoundManager s;
     private Level level;
 
-    private Player player;
-
     public Main(){
 
         setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
         setFocusable(true);
         requestFocus();
         setBackground(Color.pink);
-        player = new Player();
 
         addMouseListener(new MouseAdapter(){
 
@@ -187,14 +184,6 @@ public class Main extends JPanel{
     public void update(){
 
         level.update();
-        //speed updates
-        if(keydown[W]){
-
-            player.setxSpeed(player.getxSpeed() - .01);
-        }
-        //after updating speeds
-        player.setxPos(player.getxPos() + player.getxSpeed());
-        player.setyPos(player.getyPos() + player.getySpeed());
     }
 
     public void paint(Graphics g){
@@ -215,6 +204,10 @@ public class Main extends JPanel{
         g2d.setColor(Color.RED);
         Rectangle2D.Double rect = new Rectangle2D.Double(level.getPlayer().getX(), level.getPlayer().getY(), level.getPlayer().getWidth(), level.getPlayer().getHeight());
         g2d.fill(rect);
+
+        Ellipse2D.Double endCircle = new Ellipse2D.Double(level.getEnd().getX(), level.getEnd().getY(), level.getEnd().getWidth(), level.getEnd().getHeight());
+        g2d.setColor(Color.WHITE);
+        g2d.fill(endCircle);
 
         Toolkit.getDefaultToolkit().sync();
         g2d.dispose();
