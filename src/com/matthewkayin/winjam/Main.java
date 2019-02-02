@@ -36,12 +36,15 @@ public class Main extends JPanel{
     private SoundManager s;
     private Level level;
 
+    private Player player;
+
     public Main(){
 
         setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
         setFocusable(true);
         requestFocus();
         setBackground(Color.pink);
+        player = new Player();
 
         addMouseListener(new MouseAdapter(){
 
@@ -184,6 +187,14 @@ public class Main extends JPanel{
     public void update(){
 
         level.update();
+        //speed updates
+        if(keydown[W]){
+
+            player.setxSpeed(player.getxSpeed() - .01);
+        }
+        //after updating speeds
+        player.setxPos(player.getxPos() + player.getxSpeed());
+        player.setyPos(player.getyPos() + player.getySpeed());
     }
 
     public void paint(Graphics g){
