@@ -126,6 +126,7 @@ public class Level{
     private Entity planet;
     private Entity bigplanet;
     private Entity player;
+    private Entity end;
 
     public Level(){
 
@@ -138,6 +139,11 @@ public class Level{
         player = new Entity();
         player.setSize(40, 40);
         player.setPos(300, 650);
+        player.setPos(550, 650);
+
+        end = new Entity();
+        end.setSize(50, 50);
+        end.setPos(50, 50);
     }
 
     public void impulse(double x, double y, double speed){
@@ -213,6 +219,8 @@ public class Level{
             player.setVy(0);
             impulse(player.getX() + vdirx, player.getY() + vdiry, g);
         }
+
+        if
     }
 
     public Entity getPlanet(){
@@ -228,5 +236,10 @@ public class Level{
     public Entity getBigplanet(){
 
         return bigplanet;
+    }
+
+    public Entity getEnd(){
+
+        return end;
     }
 }
