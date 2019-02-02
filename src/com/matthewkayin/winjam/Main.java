@@ -4,6 +4,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 
 import com.matthewkayin.util.SoundManager;
 
@@ -32,6 +34,7 @@ public class Main extends JPanel{
     private final int D = 3;
 
     private SoundManager s;
+    private Level level;
 
     public Main(){
 
@@ -44,7 +47,7 @@ public class Main extends JPanel{
 
             public void mousePressed(MouseEvent e){
 
-
+                level.impulse(mousex, mousey, 5.0);
             }
 
             public void mouseReleased(MouseEvent e){
@@ -134,9 +137,8 @@ public class Main extends JPanel{
         }
 
         s = new SoundManager();
-        s.loadSound("beep.wav", "beep");
-        s.loadSound("funk.wav", "bgm");
-        s.playSound("bgm");
+
+        level = new Level();
 
         running = false;
     }
@@ -181,7 +183,7 @@ public class Main extends JPanel{
 
     public void update(){
 
-
+        level.update();
     }
 
     public void paint(Graphics g){
@@ -190,6 +192,18 @@ public class Main extends JPanel{
         Graphics2D g2d = (Graphics2D)g;
 
         //draw stuff here
+        g2d.setBackground(Color.black);
+        g2d.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        g2d.setColor(Color.green);
+        Ellipse2D.Double circle = new Ellipse2D.Double(level.getPlanet().getX(), level.getPlanet().getY(), level.getPlanet().getWidth(), level.getPlanet().getHeight());
+        g2d.fill(circle);
+        int planetRadius = (int)(level.getPlanet().getWidth() * 0.5 * 1.5);
+        g2d.drawOval((int)(level.getPlanet().getX() + (level.getPlanet().getWidth() / 2) - planetRadius), (int)(level.getPlanet().getY() + (level.getPlanet().getHeight() / 2) - planetRadius), planetRadius * 2, 2 *planetRadius);
+        circle = new Ellipse2D.Double(level.getBigplanet().getX(), level.getBigplanet().getY(), level.getBigplanet().getWidth(), level.getBigplanet().getHeight());
+        g2d.fill(circle);
+        g2d.setColor(Color.RED);
+        Rectangle2D.Double rect = new Rectangle2D.Double(level.getPlayer().getX(), level.getPlayer().getY(), level.getPlayer().getWidth(), level.getPlayer().getHeight());
+        g2d.fill(rect);
 
         Toolkit.getDefaultToolkit().sync();
         g2d.dispose();
