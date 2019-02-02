@@ -33,12 +33,15 @@ public class Main extends JPanel{
 
     private SoundManager s;
 
+    private Player player;
+
     public Main(){
 
         setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
         setFocusable(true);
         requestFocus();
         setBackground(Color.pink);
+        player = new Player();
 
         addMouseListener(new MouseAdapter(){
 
@@ -133,10 +136,10 @@ public class Main extends JPanel{
             keydown[i] = false;
         }
 
-        s = new SoundManager();
+       /* s = new SoundManager();
         s.loadSound("beep.wav", "beep");
         s.loadSound("funk.wav", "bgm");
-        s.playSound("bgm");
+        s.playSound("bgm"); */
 
         running = false;
     }
@@ -181,7 +184,14 @@ public class Main extends JPanel{
 
     public void update(){
 
+        //speed updates
+        if(keydown[W]){
 
+            player.setxSpeed(player.getxSpeed() - .01);
+        }
+        //after updating speeds
+        player.setxPos(player.getxPos() + player.getxSpeed());
+        player.setyPos(player.getyPos() + player.getySpeed());
     }
 
     public void paint(Graphics g){
