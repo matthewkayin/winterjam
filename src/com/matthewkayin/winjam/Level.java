@@ -186,15 +186,17 @@ public class Level{
             if(instructions[i][0] == 2){
 
                 planets.add(new Entity());
-                planets.get(index).setSize(200, 200);
+                planets.get(index).setSize(150, 150);
                 planets.get(index).setPos(instructions[i][1], instructions[i][2]);
+                index += 1;
             }
 
             if(instructions[i][0] == 3){
 
                 planets.add(new Entity());
-                planets.get(index).setSize(350, 350);
+                planets.get(index).setSize(250, 250);
                 planets.get(index).setPos(instructions[i][1], instructions[i][2]);
+                index += 1;
             }
 
             if(instructions[i][0] == 4){
@@ -257,7 +259,15 @@ public class Level{
         //orbiting shit dear god
         for(Entity planet : planets){
 
-            if(player.getCollision(planet)){
+
+            double offset = ((planet.getWidth() - (planet.getWidth() / Math.sqrt(2))) / 2);
+
+            Rectangle rect = new Rectangle((int)(planet.getX() + offset),
+                    (int)(planet.getY() + offset),
+                    (int)(planet.getHeight() / Math.sqrt(2)),
+                    (int)(planet.getHeight() / Math.sqrt(2)));
+
+            if(player.getCollision(rect)){
 
                 state = 2;
                 return;
