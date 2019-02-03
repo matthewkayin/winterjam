@@ -229,6 +229,14 @@ public class Level{
                 blocks.get(blockIndex).setPos(instructions[i][1], instructions[i][2]);
                 blockIndex += 1;
             }
+
+            if(instructions[i][0] == 6){
+
+                blocks.add(new Entity());
+                blocks.get(blockIndex).setSize(200, 50);
+                blocks.get(blockIndex).setPos(instructions[i][1], instructions[i][2]);
+                blockIndex += 1;
+            }
         }
     }
 

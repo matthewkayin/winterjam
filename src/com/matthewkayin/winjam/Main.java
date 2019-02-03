@@ -45,10 +45,11 @@ public class Main extends JPanel{
     private int playerstartx = (SCREEN_WIDTH / 2) - (20);
     private int playerstarty = SCREEN_HEIGHT - 40;
     private int levels[][][] = new int[][][]{
-            { {0, playerstartx, playerstarty}, {1, playerstartx, 200} },
-            { {0, playerstartx, playerstarty}, {1, playerstartx, 10}, {2, playerstartx, 300} },
-            { {0, playerstartx, playerstarty}, {1, playerstartx - 600, playerstarty - 50, 10}, {5, playerstartx - 350, playerstarty - 100}, {2, 300, 200} },
-            { {0, playerstartx, playerstarty}, {1, 1250, 10}, {3, 700, 500}, {2, 100, 200}, {4, 50, 50}, {4, 100, 900} }
+            { {0, playerstartx, playerstarty}, {1, playerstartx, 50} },
+            { {0, playerstartx, playerstarty}, {1, playerstartx, 50}, {2, playerstartx, 340} },
+            { {0, playerstartx, playerstarty}, {1, playerstartx - 560, playerstarty - 50, 10}, {5, playerstartx - 270, playerstarty - 200}, {2, 300, 200} },
+            { {0, playerstartx, playerstarty}, {1, 1250, 10}, {3, 700, 500}, {2, 100, 200}, {4, 50, 50}, {4, 100, 900} },
+            { {0, playerstartx, playerstarty}, {1, 50, 50}, {6, 20, 180}, {6, 220, 230}, {2, playerstartx - 25, 100} }
     };
 
     private BufferedImage gate_bottom;
@@ -235,7 +236,7 @@ public class Main extends JPanel{
         level = new Level(levels[0]);
 
         //DELETE ME WHEN DONE
-        currentLevel = 3;
+        currentLevel = 2;
         state = 1;
         level = new Level(levels[currentLevel]);
 
