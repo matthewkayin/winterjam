@@ -48,9 +48,9 @@ public class Main extends JPanel{
             { {0, playerstartx, playerstarty}, {1, playerstartx, 50} },
             { {0, playerstartx, playerstarty}, {1, playerstartx, 50}, {2, playerstartx, 340} },
             { {0, playerstartx, playerstarty}, {1, playerstartx - 560, playerstarty - 50, 10}, {5, playerstartx - 270, playerstarty - 200}, {2, 300, 200} },
-            { {0, playerstartx, playerstarty}, {1, 1250, 10}, {3, 700, 500}, {2, 100, 200}, {4, 50, 50}, {4, 100, 900} },
-            { {0, playerstartx, playerstarty}, {1, 50, 50}, {6, 20, 180}, {6, 220, 230}, {2, playerstartx - 25, 100} }
-    };
+            { {0, playerstartx, playerstarty}, {1, 50, 50}, {2, 165, 165}, {2, 410, 410} },
+
+    }; // { {0, playerstartx, playerstarty}, {1, 50, 50}, {6, 20, 180}, {6, 220, 230}, {2, playerstartx - 25, 100} }
 
     private BufferedImage gate_bottom;
     private BufferedImage gate_top;
@@ -59,6 +59,8 @@ public class Main extends JPanel{
     private BufferedImage black_hole;
     private BufferedImage background;
     private BufferedImage endpoint;
+    private BufferedImage satelliteh;
+    private BufferedImage satellitev;
 
     private double gateangle;
     private final double LAUNCH_SPEED = 4.0;
@@ -224,7 +226,8 @@ public class Main extends JPanel{
         s.loadSound("res/sfx/elastics.wav", "elastics");
         s.loadSound("res/sfx/explosion.wav", "explosion");
         s.loadSound("res/sfx/launch.wav", "launch");
-        //s.loadSound("res/sfx/bgm.wav", "bgm");
+        s.loadSound("res/sfx/bgm.wav", "bgm");
+        s.loadSound("res/sfx/finish.wav", "finish");
 
         try{
 
@@ -234,6 +237,8 @@ public class Main extends JPanel{
             black_hole = ImageIO.read(new File("res/gfx/blackhole.png"));
             background = ImageIO.read(new File("res/gfx/space_background.png"));
             endpoint = ImageIO.read(new File("res/gfx/endpoint.png"));
+            satelliteh = ImageIO.read(new File("res/gfx/hsatellite.png"));
+            satellitev = ImageIO.read(new File("res/gfx/vsatellite.png"));
 
         }catch(IOException e){
 
@@ -246,6 +251,8 @@ public class Main extends JPanel{
         currentLevel = 2;
         state = 1;
         level = new Level(levels[currentLevel]);
+
+        s.loopSound("bgm");
 
         running = false;
     }
@@ -422,8 +429,14 @@ public class Main extends JPanel{
             g2d.setColor(Color.red);
             for(int i = 0; i < level.noBlocks(); i++){
 
-                Rectangle2D.Double rect = new Rectangle2D.Double(level.getBlock(i).getX(), level.getBlock(i).getY(), level.getBlock(i).getWidth(), level.getBlock(i).getHeight());
-                g2d.fill(rect);
+                if(level.getBlock(i).getWidth() == 50){
+
+                    g2d.drawImage(satellitev, (int)level.getBlock(i).getX(), (int)level.getBlock(i).getY(), null);
+
+                }else{
+
+                    g2d.drawImage(satelliteh, (int)level.getBlock(i).getX(), (int)level.getBlock(i).getY(), null);
+                }
             }
 
             //g2d.drawImage(gate_bottom, level.gatex, level.gatey, null);

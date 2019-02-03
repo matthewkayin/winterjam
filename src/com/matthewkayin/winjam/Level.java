@@ -279,6 +279,7 @@ public class Level{
         if(player.getCollision(end)){
 
             state = 1;
+            soundcall.add("finish");
             return;
         }
 
