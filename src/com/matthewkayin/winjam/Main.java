@@ -56,7 +56,6 @@ public class Main extends JPanel{
                         mod = -1;
                     }
                     double speed = (2 * Math.PI * level.distfromplanet) / ((2 * Math.PI) / (level.playeranglespeed ));
-                    System.out.println(level.playerangle);
                     level.impulse(level.getPlayer().getX() + (speed * Math.cos(level.playerangle + ((Math.PI / 2) * mod) )), level.getPlayer().getY() + (speed * Math.sin(level.playerangle + ((Math.PI / 2) * mod))), speed);
 
                 }else{
@@ -209,20 +208,19 @@ public class Main extends JPanel{
         //draw stuff here
         g2d.setBackground(Color.black);
         g2d.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
         g2d.setColor(Color.green);
-        Ellipse2D.Double circle = new Ellipse2D.Double(level.getPlanet().getX(), level.getPlanet().getY(), level.getPlanet().getWidth(), level.getPlanet().getHeight());
-        g2d.fill(circle);
-        int planetRadius = (int)(level.getPlanet().getWidth() * 0.5 * 1.5);
-        g2d.drawOval((int)(level.getPlanet().getX() + (level.getPlanet().getWidth() / 2) - planetRadius), (int)(level.getPlanet().getY() + (level.getPlanet().getHeight() / 2) - planetRadius), planetRadius * 2, 2 *planetRadius);
-        circle = new Ellipse2D.Double(level.getBigplanet().getX(), level.getBigplanet().getY(), level.getBigplanet().getWidth(), level.getBigplanet().getHeight());
-        g2d.fill(circle);
+        Ellipse2D.Double circle;
+
+        for(int i = 0; i < level.noPlanets(); i++){
+
+            circle = new Ellipse2D.Double(level.getPlanet(i).getX(), level.getPlanet(i).getY(), level.getPlanet(i).getWidth(), level.getPlanet(i).getHeight());
+            g2d.fill(circle);
+        }
+
         g2d.setColor(Color.RED);
         Rectangle2D.Double rect = new Rectangle2D.Double(level.getPlayer().getX(), level.getPlayer().getY(), level.getPlayer().getWidth(), level.getPlayer().getHeight());
         g2d.fill(rect);
-
-        Ellipse2D.Double endCircle = new Ellipse2D.Double(level.getEnd().getX(), level.getEnd().getY(), level.getEnd().getWidth(), level.getEnd().getHeight());
-        g2d.setColor(Color.WHITE);
-        g2d.fill(endCircle);
 
         Toolkit.getDefaultToolkit().sync();
         g2d.dispose();
