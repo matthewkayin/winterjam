@@ -3,6 +3,7 @@ package com.matthewkayin.winjam;
 import org.w3c.dom.css.Rect;
 
 import javax.swing.text.html.parser.Entity;
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Level{
@@ -129,6 +130,14 @@ public class Level{
                     x >= e.getX() && x <= e.getX() + e.getWidth() && y + h >= e.getY() && y + h <= e.getY() + e.getHeight() ||
                     x + w >= e.getX() && x + w <= e.getX() + e.getWidth() && y + h >= e.getY() && y + h <= e.getY() + e.getHeight());
         }
+
+        public boolean getCollision(Rectangle e){
+
+            return (x >= e.getX() && x <= e.getX() + e.getWidth() && y >= e.getY() && y <= e.getY() + e.getHeight() ||
+                    x + w >= e.getX() && x + w <= e.getX() + e.getWidth() && y >= e.getY() && y <= e.getY() + e.getHeight() ||
+                    x >= e.getX() && x <= e.getX() + e.getWidth() && y + h >= e.getY() && y + h <= e.getY() + e.getHeight() ||
+                    x + w >= e.getX() && x + w <= e.getX() + e.getWidth() && y + h >= e.getY() && y + h <= e.getY() + e.getHeight());
+        }
     }
 
     private Entity player;
@@ -153,9 +162,12 @@ public class Level{
         end.setPos(50, 50);
     }
 
-    public Level(int instructions[][], int numPar){
+    public Level(int instructions[][]){
 
-        for(int i = 0; i < numPar; i++){
+        planets = new ArrayList<Entity>();
+        int index = 0;
+
+        for(int i = 0; i < instructions.length; i++){
 
             if(instructions[i][0] == 0){
 
@@ -166,23 +178,23 @@ public class Level{
 
             if(instructions[i][0] == 1){
 
-                end = new Entity;
+                end = new Entity();
                 end.setSize(50, 50);
                 end.setPos(instructions[i][1], instructions[i][2]);
             }
 
             if(instructions[i][0] == 2){
 
-                //create planet
-                //set xpos = instructions[i][1];
-                //set ypos = instruction[i][2];
+                planets.add(new Entity());
+                planets.get(index).setSize(200, 200);
+                planets.get(index).setPos(instructions[i][1], instructions[i][2]);
             }
 
             if(instructions[i][0] == 3){
 
-                //create planet
-                //set xpos = instructions[i][1];
-                //set ypos = instruction[i][2];
+                planets.add(new Entity());
+                planets.get(index).setSize(350, 350);
+                planets.get(index).setPos(instructions[i][1], instructions[i][2]);
             }
 
             if(instructions[i][0] == 4){
@@ -236,12 +248,19 @@ public class Level{
             player.incY(player.getVy());
         }
 
+        if(player.getCollision(end)){
+
+            state = 1;
+            return;
+        }
+
         //orbiting shit dear god
         for(Entity planet : planets){
 
             if(player.getCollision(planet)){
 
                 state = 2;
+                return;
             }
 
             double centerx = planet.getX() + (planet.getWidth() / 2);
@@ -330,6 +349,11 @@ public class Level{
     public int isFinished(){
 
         return state;
+    }
+
+    public void setState(int v){
+
+        state = v;
     }
 
     public Entity getPlanet(int i){

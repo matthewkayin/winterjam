@@ -35,6 +35,11 @@ public class Main extends JPanel{
 
     private SoundManager s;
     private Level level;
+    private int currentLevel = 0;
+    private int levels[][][] = new int[][][]{
+            { {0, 10, 10}, {1, 500, 500} },
+            { {0, 10, 10}, {1, 1000, 700}, {2, 500, 500} }
+    };
 
     public Main(){
 
@@ -114,7 +119,17 @@ public class Main extends JPanel{
                         break;
 
                     case KeyEvent.VK_SPACE:
-                        s.playSound("beep");
+
+                        if(level.isFinished() == 1){
+
+                            level.setState(3);
+                        }
+
+                        if(level.isFinished() == 2){
+
+                            level.setState(4);
+                        }
+
                         break;
                 }
             }
@@ -152,7 +167,7 @@ public class Main extends JPanel{
 
         s = new SoundManager();
 
-        level = new Level();
+        level = new Level(levels[0]);
 
         running = false;
     }
@@ -197,7 +212,20 @@ public class Main extends JPanel{
 
     public void update(){
 
-        level.update();
+        if(level.isFinished() == 4){
+
+            level = new Level(levels[currentLevel]);
+
+        }else if(level.isFinished() == 3){
+
+            currentLevel++;
+            level = new Level(levels[currentLevel]);
+            //put some code to check if we're at last level pls congradulate them
+
+        }else{
+
+            level.update();
+        }
     }
 
     public void paint(Graphics g){
@@ -221,6 +249,10 @@ public class Main extends JPanel{
         g2d.setColor(Color.RED);
         Rectangle2D.Double rect = new Rectangle2D.Double(level.getPlayer().getX(), level.getPlayer().getY(), level.getPlayer().getWidth(), level.getPlayer().getHeight());
         g2d.fill(rect);
+
+        g2d.setColor(Color.WHITE);
+        circle = new Ellipse2D.Double(level.getEnd().getX(), level.getEnd().getY(), level.getEnd().getWidth(), level.getEnd().getHeight());
+        g2d.fill(circle);
 
         if(level.isFinished() == 1){
 
