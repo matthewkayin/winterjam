@@ -382,8 +382,6 @@ public class Main extends JPanel{
                 g2d.fill(rect);
             }
 
-            //TODO rotation around orbit direction would be gr8
-
             //g2d.drawImage(gate_bottom, level.gatex, level.gatey, null);
             AffineTransform gate = new AffineTransform();
             gate.scale(1, 1);

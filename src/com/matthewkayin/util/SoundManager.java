@@ -65,4 +65,9 @@ public class SoundManager{
         int i = tags.indexOf(tag);
         clips.get(i).loop(Clip.LOOP_CONTINUOUSLY);
     }
+
+    public boolean isActive(int i){
+
+        return clips.get(i).isActive();
+    }
 }
