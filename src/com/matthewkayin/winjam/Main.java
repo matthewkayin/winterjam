@@ -42,16 +42,21 @@ public class Main extends JPanel{
     private SoundManager s;
     private Level level;
     private int currentLevel = 0;
+    private int playerstartx = (SCREEN_WIDTH / 2) - (20);
+    private int playerstarty = SCREEN_HEIGHT - 40;
     private int levels[][][] = new int[][][]{
-            { {0, 10, 10}, {1, 500, 500} },
-            { {0, 10, 10}, {1, 1000, 550}, {2, 500, 500} },
-            { {0, 10, 10}, {1, 1000, 600}, {2, 500, 500}, {2, 200, 200} },
-            { {0, 10, 10}, {1, 1250, 10}, {3, 700, 500}, {2, 100, 200} }
+            { {0, playerstartx, playerstarty}, {1, 500, 500} },
+            { {0, playerstartx, playerstarty}, {1, 1000, 550}, {2, 500, 500} },
+            { {0, playerstartx, playerstarty}, {1, 1000, 600}, {2, 500, 500}, {2, 200, 200} },
+            { {0, playerstartx, playerstarty}, {1, 1250, 10}, {3, 700, 500}, {2, 100, 200} }
     };
 
     private BufferedImage gate_bottom;
     private BufferedImage gate_top;
     private BufferedImage ship;
+    private BufferedImage lasers;
+
+    private double gateangle;
 
     public Main(){
 
@@ -182,6 +187,8 @@ public class Main extends JPanel{
         try{
 
             ship = ImageIO.read(new File("res/gfx/slingship.png"));
+            gate_bottom = ImageIO.read(new File("res/gfx/gate_bottom.png"));
+            gate_top = ImageIO.read(new File("res/gfx/gate_top.png"));
 
         }catch(IOException e){
 
@@ -247,6 +254,11 @@ public class Main extends JPanel{
 
             level.update();
         }
+
+        if(!level.haslaunched){
+
+            gateangle = getAngleMouse();
+        }
     }
 
     public void paint(Graphics g){
@@ -271,12 +283,62 @@ public class Main extends JPanel{
         circle = new Ellipse2D.Double(level.getEnd().getX(), level.getEnd().getY(), level.getEnd().getWidth(), level.getEnd().getHeight());
         g2d.fill(circle);
 
+        //TODO Player and Gate angle is set to 180 degrees when looking straight forward
+
+        //g2d.drawImage(gate_bottom, level.gatex, level.gatey, null);
+        AffineTransform gate = new AffineTransform();
+        gate.scale(1, 1);
+        gate.rotate(gateangle, playerstartx + (level.getPlayer().getWidth() / 2), playerstarty + (level.getPlayer().getHeight() / 2));
+        gate.translate(level.gatex, level.gatey);
+        g2d.drawImage(gate_bottom, gate, null);
+
         AffineTransform t = new AffineTransform();
         t.scale(1, 1);
-        t.rotate(level.getPlayerAngle(), level.getPlayer().getX() + (level.getPlayer().getWidth() / 2), level.getPlayer().getY() + (level.getPlayer().getHeight() / 2));
+        double pangletouse = 0;
+        if(!level.haslaunched){
+
+            pangletouse = gateangle;
+
+        }else{
+
+            level.getPlayerAngle();
+        }
+        t.rotate(pangletouse, level.getPlayer().getX() + (level.getPlayer().getWidth() / 2), level.getPlayer().getY() + (level.getPlayer().getHeight() / 2));
         t.translate(level.getPlayer().getX(), level.getPlayer().getY());
 
         g2d.drawImage(ship, t,null);
+
+        //g2d.drawImage(gate_top, level.gatex, level.gatey, null);
+        g2d.drawImage(gate_top, gate, null);
+
+        if(!level.haslaunched){
+
+            if(lasers == null){
+
+                lasers = new BufferedImage(100, 120, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D lg = (Graphics2D)lasers.getGraphics();
+                //rbg = 94, 198, 227
+                lg.setColor(new Color(94, 198, 227));
+                //left ship thing 4, 11 ; right ship thing 34, 11
+                //left gate thing 11, 33 ; right gate thing 87, 33
+                int nsx = 4;
+                int nsy = 11;
+                int ngx = 11;
+                int ngy = 33;
+                lg.setStroke(new BasicStroke(3));
+                lg.drawLine(30 + nsx, 80 + nsy, ngx, ngy);
+                nsx = 34;
+                ngx = 87;
+                ngy = 33;
+                lg.drawLine(30 + nsx, 80 + nsy, ngx, ngy);
+            }
+
+//            AffineTransform lt = new AffineTransform();
+//            lt.scale(1, 1);
+//            lt.rotate(gateangle, playerstartx + (level.getPlayer().getWidth() / 2), playerstarty + (level.getPlayer().getHeight() / 2));
+//            lt.translate(level.gatex, level.gatey);
+            g2d.drawImage(lasers, gate, null);
+        }
 
         if(level.isFinished() == 1){
 
@@ -293,6 +355,27 @@ public class Main extends JPanel{
 
         Toolkit.getDefaultToolkit().sync();
         g2d.dispose();
+    }
+
+    public double getAngleMouse(){
+
+        double distx = mousex - level.getPlayer().getX();
+        double disty = mousey - level.getPlayer().getY();
+        if(distx == 0){
+
+            return 0;
+        }
+        double ra = Math.atan(disty / distx);
+        if(distx > 0){
+
+            ra += (Math.PI / 2);
+
+        }else{
+
+            ra -= (Math.PI / 2);
+        }
+
+        return ra;
     }
 
     public static void main(String[] args){

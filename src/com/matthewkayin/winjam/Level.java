@@ -15,6 +15,9 @@ public class Level{
     public double currPlanetX;
     public double currPlanetY;
     private int state = 0; //0 is level is playing, 1 is level victory screen, 2 is level defeat screen, 3 is victory so return, 4 is loss so return
+    public int gatex;
+    public int gatey;
+    public boolean haslaunched = false;
 
     public ArrayList<Entity> planets;
 
@@ -174,6 +177,8 @@ public class Level{
                 player = new Entity();
                 player.setSize(40, 40);
                 player.setPos(instructions[i][1], instructions[i][2]);
+                gatex = (int)player.getX() - 30;
+                gatey = (int)player.getY() - 80;
             }
 
             if(instructions[i][0] == 1){
