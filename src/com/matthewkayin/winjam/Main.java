@@ -57,6 +57,11 @@ public class Main extends JPanel{
     private BufferedImage lasers;
 
     private double gateangle;
+    private final double LAUNCH_SPEED = 4.0;
+    private long launchStart;
+    private final long launchTime = 700 * 1000000; //700ms to nanoseconds
+    private int launchdirx = 0;
+    private int launchdiry = 0;
 
     public Main(){
 
@@ -82,7 +87,13 @@ public class Main extends JPanel{
 
                 }else{
 
-                    level.impulse(mousex, mousey,  6.0);
+                    if(!level.haslaunched && level.getPlayer().getVy() == 0 && level.getPlayer().getVx() == 0){
+
+                        launchStart = System.nanoTime();
+                        level.impulse(mousex, mousey, 1.3);
+                        launchdirx = mousex;
+                        launchdiry = mousey;
+                    }
                 }
             }
 
@@ -257,7 +268,21 @@ public class Main extends JPanel{
 
         if(!level.haslaunched){
 
-            gateangle = getAngleMouse();
+            if(level.getPlayer().getVy() == 0 && level.getPlayer().getVx() == 0){
+
+                gateangle = getAngleMouse();
+
+            }else{
+
+                long theTime = System.nanoTime();
+                if(theTime - launchStart >= launchTime){
+
+                    level.getPlayer().setVx(0);
+                    level.getPlayer().setVy(0);
+                    level.impulse(launchdirx, launchdiry, LAUNCH_SPEED);
+                    level.haslaunched = true;
+                }
+            }
         }
     }
 
@@ -321,25 +346,30 @@ public class Main extends JPanel{
 
         if(!level.haslaunched){
 
-            if(lasers == null){
+            lasers = new BufferedImage(100, 120, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D lg = (Graphics2D)lasers.getGraphics();
+            //rbg = 94, 198, 227
+            lg.setColor(new Color(94, 198, 227));
+            //left ship thing 4, 11 ; right ship thing 34, 11
+            //left gate thing 11, 33 ; right gate thing 87, 33
+            long now = System.nanoTime();
+            double percentShot = 0.0;
+            if(level.getPlayer().getVy() != 0 || level.getPlayer().getVx() != 0){
 
-                lasers = new BufferedImage(100, 120, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D lg = (Graphics2D)lasers.getGraphics();
-                //rbg = 94, 198, 227
-                lg.setColor(new Color(94, 198, 227));
-                //left ship thing 4, 11 ; right ship thing 34, 11
-                //left gate thing 11, 33 ; right gate thing 87, 33
-                int nsx = 4;
-                int nsy = 11;
-                int ngx = 11;
-                int ngy = 33;
-                lg.setStroke(new BasicStroke(3));
-                lg.drawLine(30 + nsx, 80 + nsy, ngx, ngy);
-                nsx = 34;
-                ngx = 87;
-                ngy = 33;
-                lg.drawLine(30 + nsx, 80 + nsy, ngx, ngy);
+                percentShot = (double)(now - launchStart) / (double)launchTime;
             }
+            int nsx = 4;
+            int nsy = (int)(11 - (58*percentShot));
+            int ngx = 11;
+            int ngy = 33;
+            lg.setStroke(new BasicStroke(3));
+            lg.drawLine(30 + nsx, 80 + nsy, ngx, ngy);
+            nsx = 34;
+            nsy = (int)(11 - (58*percentShot));
+            ngx = 87;
+            ngy = 33;
+            lg.drawLine(30 + nsx, 80 + nsy, ngx, ngy);
+
 
 //            AffineTransform lt = new AffineTransform();
 //            lt.scale(1, 1);
