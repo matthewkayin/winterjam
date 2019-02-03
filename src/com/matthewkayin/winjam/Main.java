@@ -48,13 +48,15 @@ public class Main extends JPanel{
             { {0, playerstartx, playerstarty}, {1, playerstartx, 200} },
             { {0, playerstartx, playerstarty}, {1, playerstartx, 10}, {2, playerstartx, 300} },
             { {0, playerstartx, playerstarty}, {1, playerstartx - 600, playerstarty - 50, 10}, {5, playerstartx - 350, playerstarty - 100}, {2, 300, 200} },
-            { {0, playerstartx, playerstarty}, {1, 1250, 10}, {3, 700, 500}, {2, 100, 200} }
+            { {0, playerstartx, playerstarty}, {1, 1250, 10}, {3, 700, 500}, {2, 100, 200}, {4, 50, 50}, {4, 100, 900} }
     };
 
     private BufferedImage gate_bottom;
     private BufferedImage gate_top;
     private BufferedImage ship;
     private BufferedImage lasers;
+    private BufferedImage black_hole;
+    private BufferedImage background;
 
     private double gateangle;
     private final double LAUNCH_SPEED = 4.0;
@@ -215,6 +217,8 @@ public class Main extends JPanel{
             ship = ImageIO.read(new File("res/gfx/slingship.png"));
             gate_bottom = ImageIO.read(new File("res/gfx/gate_bottom.png"));
             gate_top = ImageIO.read(new File("res/gfx/gate_top.png"));
+            black_hole = ImageIO.read(new File("res/gfx/blackhole.png"));
+            background = ImageIO.read(new File("res/gfx/space_background.png"));
 
         }catch(IOException e){
 
@@ -224,7 +228,7 @@ public class Main extends JPanel{
         level = new Level(levels[0]);
 
         //DELETE ME WHEN DONE
-        currentLevel = 2;
+        currentLevel = 3;
         state = 1;
         level = new Level(levels[currentLevel]);
 
@@ -284,7 +288,7 @@ public class Main extends JPanel{
 
             currentLevel++;
             level = new Level(levels[currentLevel]);
-            //put some code to check if we're at last level pls congradulate them
+            //put some code to check if we're at last level pls congratulate them
 
         }else{
 
@@ -332,8 +336,8 @@ public class Main extends JPanel{
         Graphics2D g2d = (Graphics2D)g;
 
         //draw stuff here
-        g2d.setBackground(Color.black);
-        g2d.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        g2d.drawImage(background, 0, 0, null);
+
 
         if(state == 0){
 
@@ -356,12 +360,12 @@ public class Main extends JPanel{
                 g2d.fill(circle);
             }
 
-            g2d.setColor(Color.cyan);
-
             for(int i = 0; i < level.getBHSize(); i++){
 
-                circle = new Ellipse2D.Double(level.getBlackHole(i).getX(), level.getBlackHole(i).getY(), level.getBlackHole(i).getWidth(), level.getBlackHole(i).getHeight());
-                g2d.fill(circle);
+                AffineTransform stationary = new AffineTransform();
+                stationary.scale(1, 1);
+                stationary.translate(level.getBlackHole(i).getX(), level.getBlackHole(i).getY());
+                g2d.drawImage(black_hole, stationary, null);
             }
 
             g2d.setColor(Color.WHITE);
@@ -478,7 +482,7 @@ public class Main extends JPanel{
 
     public static void main(String[] args){
 
-        JFrame window = new JFrame("winter gam");
+        JFrame window = new JFrame("SLING SHIP");
         window.setSize(1980, 1020);
         window.setResizable(false);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
