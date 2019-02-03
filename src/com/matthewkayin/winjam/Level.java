@@ -234,22 +234,14 @@ public class Level{
 
     public void impulse(double x, double y, double speed){
 
-        double dirx = Math.abs(x - player.getX() + (player.getWidth() / 2));
-        double diry = Math.abs(y - player.getY() + (player.getHeight() / 2));
+        double dirx = x - player.getX() + (player.getWidth() / 2);
+        double diry = y - player.getY() + (player.getHeight() / 2);
         double hyp = Math.sqrt((dirx * dirx) + (diry * diry)); //pythagoras
         double diff = hyp / speed;
         double ndx = dirx / diff;
         double ndy = diry / diff;
         int xmod = 1;
         int ymod = 1;
-        if(x < player.getX()){
-
-            xmod = -1;
-        }
-        if(y < player.getY()){
-
-            ymod = -1;
-        }
         player.setVx(player.getVx() + ndx*xmod);
         player.setVy(player.getVy() + ndy*ymod);
     }
