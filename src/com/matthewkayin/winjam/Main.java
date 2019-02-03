@@ -222,6 +222,19 @@ public class Main extends JPanel{
         Rectangle2D.Double rect = new Rectangle2D.Double(level.getPlayer().getX(), level.getPlayer().getY(), level.getPlayer().getWidth(), level.getPlayer().getHeight());
         g2d.fill(rect);
 
+        if(level.isFinished() == 1){
+
+            g2d.setColor(Color.green);
+            g2d.setFont(new Font("Helvetica", Font.BOLD, 200));
+            g2d.drawString("VICTORY", (SCREEN_WIDTH / 2) - 450, (SCREEN_HEIGHT / 2) );
+
+        }else if(level.isFinished() == 2){
+
+            g2d.setColor(Color.red);
+            g2d.setFont(new Font("Helvetica", Font.BOLD, 200));
+            g2d.drawString("FAILURE", (SCREEN_WIDTH / 2) - 450, (SCREEN_HEIGHT / 2) );
+        }
+
         Toolkit.getDefaultToolkit().sync();
         g2d.dispose();
     }

@@ -1,5 +1,7 @@
 package com.matthewkayin.winjam;
 
+import org.w3c.dom.css.Rect;
+
 import javax.swing.text.html.parser.Entity;
 import java.util.ArrayList;
 
@@ -11,6 +13,7 @@ public class Level{
     public boolean freeing = false;
     public double currPlanetX;
     public double currPlanetY;
+    private int state = 0; //0 is level is playing, 1 is level victory screen, 2 is level defeat screen, 3 is victory so return, 4 is loss so return
 
     public ArrayList<Entity> planets;
 
@@ -117,6 +120,14 @@ public class Level{
 
             return (4.0 / 3.0) * Math.PI * (w / 2) * (w / 2) * (w / 3);
         }
+
+        public boolean getCollision(Entity e){
+
+            return (x >= e.getX() && x <= e.getX() + e.getWidth() && y >= e.getY() && y <= e.getY() + e.getHeight() ||
+                x + w >= e.getX() && x + w <= e.getX() + e.getWidth() && y >= e.getY() && y <= e.getY() + e.getHeight() ||
+                    x >= e.getX() && x <= e.getX() + e.getWidth() && y + h >= e.getY() && y + h <= e.getY() + e.getHeight() ||
+                    x + w >= e.getX() && x + w <= e.getX() + e.getWidth() && y + h >= e.getY() && y + h <= e.getY() + e.getHeight());
+        }
     }
 
     private Entity player;
@@ -165,6 +176,12 @@ public class Level{
 
     public void update() {
 
+        if(state == 1 || state == 2){
+
+            return;
+        }
+
+        //player movement
         if(player.orbiting && !freeing){
 
             playerangle += playeranglespeed;
@@ -177,7 +194,13 @@ public class Level{
             player.incY(player.getVy());
         }
 
+        //orbiting shit dear god
         for(Entity planet : planets){
+
+            if(player.getCollision(planet)){
+
+                state = 2;
+            }
 
             double centerx = planet.getX() + (planet.getWidth() / 2);
             double centery = planet.getY() + (planet.getHeight() / 2);
@@ -260,6 +283,11 @@ public class Level{
                 }
             }
         }
+    }
+
+    public int isFinished(){
+
+        return state;
     }
 
     public Entity getPlanet(int i){
