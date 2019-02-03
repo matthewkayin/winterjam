@@ -59,4 +59,10 @@ public class SoundManager{
         int i = tags.indexOf(tag);
         clips.get(i).setMicrosecondPosition(0);
     }
+
+    public void loopSound(String tag){
+
+        int i = tags.indexOf(tag);
+        clips.get(i).loop(Clip.LOOP_CONTINUOUSLY);
+    }
 }

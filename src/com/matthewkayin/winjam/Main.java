@@ -106,7 +106,14 @@ public class Main extends JPanel{
                         mod = -1;
                     }
                     double speed = (2 * Math.PI * level.distfromplanet) / ((2 * Math.PI) / (level.playeranglespeed ));
-                    level.impulse(level.getPlayer().getX() + (speed * Math.cos(level.playerangle + ((Math.PI / 2) * mod) )), level.getPlayer().getY() + (speed * Math.sin(level.playerangle + ((Math.PI / 2) * mod))), speed);
+                    level.getPlayer().setVx(0);
+                    level.getPlayer().setVy(0);
+                    // int x = (int)( level.getPlayer().getX() + (speed * Math.cos(level.playerangle + ((Math.PI / 2) * mod) )));
+                    int x = (int)( level.getPlayer().getX() + (level.getPlayer().getWidth() / 2) + (1000 * Math.cos(level.getPlayerRenderAngle() - (mod*Math.PI / 2) )));
+
+                    //             int y = (int) (level.getPlayer().getY() + (speed * Math.sin(level.playerangle + ((Math.PI / 2) * mod))) );
+                    int y = (int) (level.getPlayer().getY() + (level.getPlayer().getHeight() / 2) + (1000 * Math.sin(level.getPlayerRenderAngle() - (mod*Math.PI / 2))) );
+                    level.impulse(x, y, speed);
 
                 }else{
 
@@ -439,6 +446,16 @@ public class Main extends JPanel{
 //            lt.rotate(gateangle, playerstartx + (level.getPlayer().getWidth() / 2), playerstarty + (level.getPlayer().getHeight() / 2));
 //            lt.translate(level.gatex, level.gatey);
                 g2d.drawImage(lasers, gate, null);
+            }
+
+            if(level.getPlayer().orbiting){
+
+                int x = (int)( level.getPlayer().getX() + (level.getPlayer().getWidth() / 2) + (40 * Math.cos(level.getPlayerRenderAngle() - (Math.PI / 2) )));
+
+                //             int y = (int) (level.getPlayer().getY() + (speed * Math.sin(level.playerangle + ((Math.PI / 2) * mod))) );
+                int y = (int) (level.getPlayer().getY() + (level.getPlayer().getHeight() / 2) + (40 * Math.sin(level.getPlayerRenderAngle() - (Math.PI / 2))) );
+                g2d.setColor(Color.red);
+                g2d.fillRect(x - 2, y - 2, 4, 4);
             }
 
             if(level.isFinished() == 1){
