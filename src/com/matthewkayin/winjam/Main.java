@@ -45,9 +45,9 @@ public class Main extends JPanel{
     private int playerstartx = (SCREEN_WIDTH / 2) - (20);
     private int playerstarty = SCREEN_HEIGHT - 40;
     private int levels[][][] = new int[][][]{
-            { {0, playerstartx, playerstarty}, {1, 500, 500} },
-            { {0, playerstartx, playerstarty}, {1, 1000, 550}, {2, 500, 500} },
-            { {0, playerstartx, playerstarty}, {1, 1000, 600}, {2, 500, 500}, {2, 200, 200} },
+            { {0, playerstartx, playerstarty}, {1, playerstartx, 200} },
+            { {0, playerstartx, playerstarty}, {1, playerstartx, 10}, {2, playerstartx, 300} },
+            { {0, playerstartx, playerstarty}, {1, playerstartx - 600, playerstarty - 50, 10}, {5, playerstartx - 350, playerstarty - 100}, {2, 300, 200} },
             { {0, playerstartx, playerstarty}, {1, 1250, 10}, {3, 700, 500}, {2, 100, 200} }
     };
 
@@ -63,6 +63,8 @@ public class Main extends JPanel{
     private int launchdirx = 0;
     private int launchdiry = 0;
 
+    private int state = 0;
+
     public Main(){
 
         setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
@@ -73,6 +75,25 @@ public class Main extends JPanel{
         addMouseListener(new MouseAdapter(){
 
             public void mousePressed(MouseEvent e){
+
+                if(state == 0){
+
+                    state = 1;
+                    level = new Level(levels[0]);
+                    return;
+                }
+
+                if(level.isFinished() == 1){
+
+                    level.setState(3);
+                    return;
+                }
+
+                if(level.isFinished() == 2){
+
+                    level.setState(4);
+                    return;
+                }
 
                 if(level.getPlayer().orbiting){
 
@@ -127,7 +148,9 @@ public class Main extends JPanel{
                 switch(keycode){
 
                     case KeyEvent.VK_ESCAPE:
-                        running = false;
+                        if(state == 0){running = false;}
+                        state = 0;
+                        currentLevel = 0;
                         break;
 
                     case KeyEvent.VK_W:
@@ -148,15 +171,7 @@ public class Main extends JPanel{
 
                     case KeyEvent.VK_SPACE:
 
-                        if(level.isFinished() == 1){
-
-                            level.setState(3);
-                        }
-
-                        if(level.isFinished() == 2){
-
-                            level.setState(4);
-                        }
+                        //doesn't do a damn thing
 
                         break;
                 }
@@ -208,6 +223,11 @@ public class Main extends JPanel{
 
         level = new Level(levels[0]);
 
+        //DELETE ME WHEN DONE
+        currentLevel = 2;
+        state = 1;
+        level = new Level(levels[currentLevel]);
+
         running = false;
     }
 
@@ -251,6 +271,11 @@ public class Main extends JPanel{
 
     public void update(){
 
+        if(state == 0){
+
+            return;
+        }
+
         if(level.isFinished() == 4){
 
             level = new Level(levels[currentLevel]);
@@ -264,6 +289,14 @@ public class Main extends JPanel{
         }else{
 
             level.update();
+
+            if(level.getPlayer().getX() < 0 || level.getPlayer().getX() + level.getPlayer().getWidth() > SCREEN_WIDTH ||
+                level.getPlayer().getY() < 0 || level.getPlayer().getY() + level.getPlayer().getHeight() > SCREEN_HEIGHT){
+
+                level.getPlayer().setVx(0);
+                level.getPlayer().setVy(0);
+                level.setState(2);
+            }
         }
 
         if(!level.haslaunched){
@@ -295,100 +328,120 @@ public class Main extends JPanel{
         g2d.setBackground(Color.black);
         g2d.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        g2d.setColor(Color.green);
-        Ellipse2D.Double circle;
+        if(state == 0){
 
-        for(int i = 0; i < level.noPlanets(); i++){
-
-            circle = new Ellipse2D.Double(level.getPlanet(i).getX(), level.getPlanet(i).getY(), level.getPlanet(i).getWidth(), level.getPlanet(i).getHeight());
-            g2d.fill(circle);
-        }
-
-        g2d.setColor(Color.cyan);
-
-        for(int i = 0; i < level.getBHSize(); i++){
-
-            circle = new Ellipse2D.Double(level.getBlackHole(i).getX(), level.getBlackHole(i).getY(), level.getBlackHole(i).getWidth(), level.getBlackHole(i).getHeight());
-            g2d.fill(circle);
-        }
-
-        g2d.setColor(Color.WHITE);
-        circle = new Ellipse2D.Double(level.getEnd().getX(), level.getEnd().getY(), level.getEnd().getWidth(), level.getEnd().getHeight());
-        g2d.fill(circle);
-
-        //TODO Player and Gate angle is set to 180 degrees when looking straight forward
-
-        //g2d.drawImage(gate_bottom, level.gatex, level.gatey, null);
-        AffineTransform gate = new AffineTransform();
-        gate.scale(1, 1);
-        gate.rotate(gateangle, playerstartx + (level.getPlayer().getWidth() / 2), playerstarty + (level.getPlayer().getHeight() / 2));
-        gate.translate(level.gatex, level.gatey);
-        g2d.drawImage(gate_bottom, gate, null);
-
-        AffineTransform t = new AffineTransform();
-        t.scale(1, 1);
-        double pangletouse = 0;
-        if(!level.haslaunched){
-
-            pangletouse = gateangle;
+            //draw menu
+            g2d.setFont(new Font("Helvetica", Font.BOLD, 150));
+            g2d.setColor(Color.yellow);
+            g2d.drawString("SLING SHIPS", (SCREEN_WIDTH / 2) - 520, 170);
+            g2d.setFont(new Font("Helvetica", Font.BOLD, 80));
+            g2d.setColor(Color.green);
+            g2d.drawString("Click to Start", (SCREEN_WIDTH / 2) - 300, 500);
 
         }else{
 
-            level.getPlayerAngle();
-        }
-        t.rotate(pangletouse, level.getPlayer().getX() + (level.getPlayer().getWidth() / 2), level.getPlayer().getY() + (level.getPlayer().getHeight() / 2));
-        t.translate(level.getPlayer().getX(), level.getPlayer().getY());
+            g2d.setColor(Color.green);
+            Ellipse2D.Double circle;
 
-        g2d.drawImage(ship, t,null);
+            for(int i = 0; i < level.noPlanets(); i++){
 
-        //g2d.drawImage(gate_top, level.gatex, level.gatey, null);
-        g2d.drawImage(gate_top, gate, null);
-
-        if(!level.haslaunched){
-
-            lasers = new BufferedImage(100, 120, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D lg = (Graphics2D)lasers.getGraphics();
-            //rbg = 94, 198, 227
-            lg.setColor(new Color(94, 198, 227));
-            //left ship thing 4, 11 ; right ship thing 34, 11
-            //left gate thing 11, 33 ; right gate thing 87, 33
-            long now = System.nanoTime();
-            double percentShot = 0.0;
-            if(level.getPlayer().getVy() != 0 || level.getPlayer().getVx() != 0){
-
-                percentShot = (double)(now - launchStart) / (double)launchTime;
+                circle = new Ellipse2D.Double(level.getPlanet(i).getX(), level.getPlanet(i).getY(), level.getPlanet(i).getWidth(), level.getPlanet(i).getHeight());
+                g2d.fill(circle);
             }
-            int nsx = 4;
-            int nsy = (int)(11 - (58*percentShot));
-            int ngx = 11;
-            int ngy = 33;
-            lg.setStroke(new BasicStroke(3));
-            lg.drawLine(30 + nsx, 80 + nsy, ngx, ngy);
-            nsx = 34;
-            nsy = (int)(11 - (58*percentShot));
-            ngx = 87;
-            ngy = 33;
-            lg.drawLine(30 + nsx, 80 + nsy, ngx, ngy);
+
+            g2d.setColor(Color.cyan);
+
+            for(int i = 0; i < level.getBHSize(); i++){
+
+                circle = new Ellipse2D.Double(level.getBlackHole(i).getX(), level.getBlackHole(i).getY(), level.getBlackHole(i).getWidth(), level.getBlackHole(i).getHeight());
+                g2d.fill(circle);
+            }
+
+            g2d.setColor(Color.WHITE);
+            circle = new Ellipse2D.Double(level.getEnd().getX(), level.getEnd().getY(), level.getEnd().getWidth(), level.getEnd().getHeight());
+            g2d.fill(circle);
+
+            g2d.setColor(Color.red);
+            for(int i = 0; i < level.noBlocks(); i++){
+
+                Rectangle2D.Double rect = new Rectangle2D.Double(level.getBlock(i).getX(), level.getBlock(i).getY(), level.getBlock(i).getWidth(), level.getBlock(i).getHeight());
+                g2d.fill(rect);
+            }
+
+            //TODO rotation around orbit direction would be gr8
+
+            //g2d.drawImage(gate_bottom, level.gatex, level.gatey, null);
+            AffineTransform gate = new AffineTransform();
+            gate.scale(1, 1);
+            gate.rotate(gateangle, playerstartx + (level.getPlayer().getWidth() / 2), playerstarty + (level.getPlayer().getHeight() / 2));
+            gate.translate(level.gatex, level.gatey);
+            g2d.drawImage(gate_bottom, gate, null);
+
+            AffineTransform t = new AffineTransform();
+            t.scale(1, 1);
+            double pangletouse = 0;
+            if(!level.haslaunched){
+
+                pangletouse = gateangle;
+
+            }else{
+
+                pangletouse = level.getPlayerRenderAngle();
+            }
+            t.rotate(pangletouse, level.getPlayer().getX() + (level.getPlayer().getWidth() / 2), level.getPlayer().getY() + (level.getPlayer().getHeight() / 2));
+            t.translate(level.getPlayer().getX(), level.getPlayer().getY());
+
+            g2d.drawImage(ship, t,null);
+
+            //g2d.drawImage(gate_top, level.gatex, level.gatey, null);
+            g2d.drawImage(gate_top, gate, null);
+
+            if(!level.haslaunched){
+
+                lasers = new BufferedImage(100, 120, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D lg = (Graphics2D)lasers.getGraphics();
+                //rbg = 94, 198, 227
+                lg.setColor(new Color(94, 198, 227));
+                //left ship thing 4, 11 ; right ship thing 34, 11
+                //left gate thing 11, 33 ; right gate thing 87, 33
+                long now = System.nanoTime();
+                double percentShot = 0.0;
+                if(level.getPlayer().getVy() != 0 || level.getPlayer().getVx() != 0){
+
+                    percentShot = (double)(now - launchStart) / (double)launchTime;
+                }
+                int nsx = 4;
+                int nsy = (int)(11 - (58*percentShot));
+                int ngx = 11;
+                int ngy = 33;
+                lg.setStroke(new BasicStroke(3));
+                lg.drawLine(30 + nsx, 80 + nsy, ngx, ngy);
+                nsx = 34;
+                nsy = (int)(11 - (58*percentShot));
+                ngx = 87;
+                ngy = 33;
+                lg.drawLine(30 + nsx, 80 + nsy, ngx, ngy);
 
 
 //            AffineTransform lt = new AffineTransform();
 //            lt.scale(1, 1);
 //            lt.rotate(gateangle, playerstartx + (level.getPlayer().getWidth() / 2), playerstarty + (level.getPlayer().getHeight() / 2));
 //            lt.translate(level.gatex, level.gatey);
-            g2d.drawImage(lasers, gate, null);
-        }
+                g2d.drawImage(lasers, gate, null);
+            }
 
-        if(level.isFinished() == 1){
+            if(level.isFinished() == 1){
 
-            g2d.setColor(Color.green);
-            g2d.setFont(new Font("Helvetica", Font.BOLD, 200));
-            g2d.drawString("VICTORY", (SCREEN_WIDTH / 2) - 450, (SCREEN_HEIGHT / 2) );
+                g2d.setColor(Color.green);
+                g2d.setFont(new Font("Helvetica", Font.BOLD, 200));
+                g2d.drawString("VICTORY", (SCREEN_WIDTH / 2) - 450, (SCREEN_HEIGHT / 2) );
 
-        }else if(level.isFinished() == 2){
+            }else if(level.isFinished() == 2){
 
-            g2d.setColor(Color.red);
-            g2d.setFont(new Font("Helvetica", Font.BOLD, 200));
-            g2d.drawString("FAILURE", (SCREEN_WIDTH / 2) - 450, (SCREEN_HEIGHT / 2) );
+                g2d.setColor(Color.red);
+                g2d.setFont(new Font("Helvetica", Font.BOLD, 200));
+                g2d.drawString("FAILURE", (SCREEN_WIDTH / 2) - 450, (SCREEN_HEIGHT / 2) );
+            }
         }
 
         Toolkit.getDefaultToolkit().sync();

@@ -19,9 +19,11 @@ public class Level{
     public int gatex;
     public int gatey;
     public boolean haslaunched = false;
+    public boolean clockwise = false;
 
     public ArrayList<Entity> planets;
     public ArrayList<Entity> blackHoles;
+    public ArrayList<Entity> blocks;
 
     public class Entity {
 
@@ -171,8 +173,10 @@ public class Level{
 
         planets = new ArrayList<Entity>();
         blackHoles = new ArrayList<Entity>();
+        blocks = new ArrayList<Entity>();
         int index = 0;
         int holeIndex = 0;
+        int blockIndex = 0;
 
         for(int i = 0; i < instructions.length; i++){
 
@@ -214,6 +218,14 @@ public class Level{
                 blackHoles.get(holeIndex).setSize(50, 50);
                 blackHoles.get(holeIndex).setPos(instructions[i][1], instructions[i][2]);
                 holeIndex += 1;
+            }
+
+            if(instructions[i][0] == 5){
+
+                blocks.add(new Entity());
+                blocks.get(blockIndex).setSize(50, 200);
+                blocks.get(blockIndex).setPos(instructions[i][1], instructions[i][2]);
+                blockIndex += 1;
             }
         }
     }
@@ -264,6 +276,16 @@ public class Level{
 
             state = 1;
             return;
+        }
+
+        for(Entity block : blocks){
+
+            if(player.getCollision(block)){
+
+                state = 2;
+                System.out.println("hello");
+                return;
+            }
         }
 
         //checking if we hit blackhole
@@ -322,7 +344,7 @@ public class Level{
 
             double centerx = planet.getX() + (planet.getWidth() / 2);
             double centery = planet.getY() + (planet.getHeight() / 2);
-            double planetRadius = (planet.getWidth() / 2) * 1.5;;
+            double planetRadius = (planet.getWidth() / 2) * 2.0;
             double playerx = player.getX() + (player.getWidth() / 2);
             double playery = player.getY() + (player.getHeight() / 2);
             double pdirx = playerx - centerx;
@@ -382,6 +404,7 @@ public class Level{
 
                             playerangle += Math.PI;
                         }
+                        clockwise = (pasmod == 1);
                         playeranglespeed *= pasmod;
                         distfromplanet = pdist;
                         currPlanetX = centerx;
@@ -443,23 +466,49 @@ public class Level{
         return end;
     }
 
+    public int noBlocks(){
+
+        return blocks.size();
+    }
+
+    public Entity getBlock(int i){
+
+        return blocks.get(i);
+    }
+
     public double getPlayerAngle(){
 
         if(player.getVx() == 0){
 
             return 0;
-        }
-
-        double ra = Math.atan(player.getVy() / player.getVx());
-        if(player.getVx() > 0){
-
-            ra += (Math.PI / 2);
 
         }else{
 
-            ra -= (Math.PI / 2);
-        }
+            double ra = Math.atan(player.getVy() / player.getVx());
+            if(player.getVx() > 0){
 
-        return ra;
+                ra += (Math.PI / 2);
+
+            }else{
+
+                ra -= (Math.PI / 2);
+            }
+
+            return ra;
+        }
+    }
+
+    public double getPlayerRenderAngle(){
+
+        if(player.orbiting){
+
+            double ra = playerangle;
+            if(clockwise){ ra += Math.PI; }
+            return ra;
+
+        }else{
+
+            return getPlayerAngle();
+        }
     }
 }
