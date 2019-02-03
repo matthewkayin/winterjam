@@ -375,4 +375,24 @@ public class Level{
 
         return end;
     }
+
+    public double getPlayerAngle(){
+
+        if(player.getVx() == 0){
+
+            return 0;
+        }
+
+        double ra = Math.atan(player.getVy() / player.getVx());
+        if(player.getVx() > 0){
+
+            ra += (Math.PI / 2);
+
+        }else{
+
+            ra -= (Math.PI / 2);
+        }
+
+        return ra;
+    }
 }

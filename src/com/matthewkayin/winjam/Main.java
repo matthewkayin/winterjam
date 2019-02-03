@@ -1,11 +1,17 @@
 package com.matthewkayin.winjam;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 import com.matthewkayin.util.SoundManager;
 
@@ -40,6 +46,10 @@ public class Main extends JPanel{
             { {0, 10, 10}, {1, 500, 500} },
             { {0, 10, 10}, {1, 1000, 700}, {2, 500, 500} }
     };
+
+    private BufferedImage gate_bottom;
+    private BufferedImage gate_top;
+    private BufferedImage ship;
 
     public Main(){
 
@@ -167,6 +177,15 @@ public class Main extends JPanel{
 
         s = new SoundManager();
 
+        try{
+
+            ship = ImageIO.read(new File("res/gfx/slingship.png"));
+
+        }catch(IOException e){
+
+            e.printStackTrace();
+        }
+
         level = new Level(levels[0]);
 
         running = false;
@@ -246,13 +265,16 @@ public class Main extends JPanel{
             g2d.fill(circle);
         }
 
-        g2d.setColor(Color.RED);
-        Rectangle2D.Double rect = new Rectangle2D.Double(level.getPlayer().getX(), level.getPlayer().getY(), level.getPlayer().getWidth(), level.getPlayer().getHeight());
-        g2d.fill(rect);
-
         g2d.setColor(Color.WHITE);
         circle = new Ellipse2D.Double(level.getEnd().getX(), level.getEnd().getY(), level.getEnd().getWidth(), level.getEnd().getHeight());
         g2d.fill(circle);
+
+        AffineTransform t = new AffineTransform();
+        t.scale(1, 1);
+        t.rotate(level.getPlayerAngle(), level.getPlayer().getX() + (level.getPlayer().getWidth() / 2), level.getPlayer().getY() + (level.getPlayer().getHeight() / 2));
+        t.translate(level.getPlayer().getX(), level.getPlayer().getY());
+
+        g2d.drawImage(ship, t,null);
 
         if(level.isFinished() == 1){
 
