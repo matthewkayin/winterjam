@@ -4,7 +4,7 @@ import org.w3c.dom.css.Rect;
 
 import javax.swing.text.html.parser.Entity;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Level{
 
@@ -20,6 +20,7 @@ public class Level{
     public int gatey;
     public boolean haslaunched = false;
     public boolean clockwise = false;
+    private Queue<String> soundcall;
 
     public ArrayList<Entity> planets;
     public ArrayList<Entity> blackHoles;
@@ -171,6 +172,7 @@ public class Level{
 
     public Level(int instructions[][]){
 
+        soundcall = new LinkedList<>();
         planets = new ArrayList<Entity>();
         blackHoles = new ArrayList<Entity>();
         blocks = new ArrayList<Entity>();
@@ -509,6 +511,23 @@ public class Level{
         }else{
 
             return getPlayerAngle();
+        }
+    }
+
+    public void playSound(String s){
+
+        soundcall.add(s);
+    }
+
+    public String getSound(){
+
+        if(soundcall.isEmpty()){
+
+            return "";
+
+        }else{
+
+            return soundcall.remove();
         }
     }
 }

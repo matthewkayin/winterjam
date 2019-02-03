@@ -317,6 +317,13 @@ public class Main extends JPanel{
                 }
             }
         }
+
+        String v = level.getSound();
+        while(!v.equals("")){
+
+            s.playSound(v);
+            v = level.getSound();
+        }
     }
 
     public void paint(Graphics g){
