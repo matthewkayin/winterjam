@@ -26,6 +26,8 @@ public class Level{
     public ArrayList<Entity> blackHoles;
     public ArrayList<Entity> blocks;
 
+    public boolean explosionPlayed = false;
+
     public class Entity {
 
         private double x;
@@ -277,7 +279,7 @@ public class Level{
             if(player.getCollision(block)){
 
                 state = 2;
-                System.out.println("hello");
+                soundcall.add("explosion");
                 return;
             }
         }
@@ -333,6 +335,7 @@ public class Level{
             if(player.getCollision(rect)){
 
                 state = 2;
+                soundcall.add("explosion");
                 return;
             }
 

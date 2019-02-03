@@ -66,8 +66,20 @@ public class SoundManager{
         clips.get(i).loop(Clip.LOOP_CONTINUOUSLY);
     }
 
-    public boolean isActive(int i){
+    public boolean isActive(String tag){
 
+        int i = tags.indexOf(tag);
         return clips.get(i).isActive();
+    }
+
+    public void resetAsNeeded(){
+
+        for(Clip clip : clips){
+
+            if(!clip.isActive()){
+
+                clip.setMicrosecondPosition(0);
+            }
+        }
     }
 }

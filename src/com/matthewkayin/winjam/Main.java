@@ -57,11 +57,12 @@ public class Main extends JPanel{
     private BufferedImage lasers;
     private BufferedImage black_hole;
     private BufferedImage background;
+    private BufferedImage endpoint;
 
     private double gateangle;
     private final double LAUNCH_SPEED = 4.0;
     private long launchStart;
-    private final long launchTime = 700 * 1000000; //700ms to nanoseconds
+    private final long launchTime = 1100 * 1000000; //700ms to nanoseconds
     private int launchdirx = 0;
     private int launchdiry = 0;
 
@@ -123,6 +124,7 @@ public class Main extends JPanel{
                         level.impulse(mousex, mousey, 1.3);
                         launchdirx = mousex;
                         launchdiry = mousey;
+                        s.playSound("launch");
                     }
                 }
             }
@@ -218,6 +220,10 @@ public class Main extends JPanel{
         }
 
         s = new SoundManager();
+        s.loadSound("res/sfx/elastics.wav", "elastics");
+        s.loadSound("res/sfx/explosion.wav", "explosion");
+        s.loadSound("res/sfx/launch.wav", "launch");
+        //s.loadSound("res/sfx/bgm.wav", "bgm");
 
         try{
 
@@ -226,6 +232,7 @@ public class Main extends JPanel{
             gate_top = ImageIO.read(new File("res/gfx/gate_top.png"));
             black_hole = ImageIO.read(new File("res/gfx/blackhole.png"));
             background = ImageIO.read(new File("res/gfx/space_background.png"));
+            endpoint = ImageIO.read(new File("res/gfx/endpoint.png"));
 
         }catch(IOException e){
 
@@ -235,7 +242,7 @@ public class Main extends JPanel{
         level = new Level(levels[0]);
 
         //DELETE ME WHEN DONE
-        currentLevel = 3;
+        currentLevel = 2;
         state = 1;
         level = new Level(levels[currentLevel]);
 
@@ -307,10 +314,20 @@ public class Main extends JPanel{
                 level.getPlayer().setVx(0);
                 level.getPlayer().setVy(0);
                 level.setState(2);
+                if(!level.explosionPlayed){
+
+                    s.playSound("explosion");
+                    level.explosionPlayed = true;
+                }
             }
         }
 
         if(!level.haslaunched){
+
+            if(!s.isActive("elastics")){
+
+                s.loopSound("elastics");
+            }
 
             if(level.getPlayer().getVy() == 0 && level.getPlayer().getVx() == 0){
 
@@ -327,14 +344,35 @@ public class Main extends JPanel{
                     level.haslaunched = true;
                 }
             }
+
+        }else{
+
+            if(s.isActive("elastics")){
+
+                s.pauseSound("elastics");
+            }
         }
 
         String v = level.getSound();
         while(!v.equals("")){
 
-            s.playSound(v);
-            v = level.getSound();
+            if(v.equals("explosion")){
+
+                if(!level.explosionPlayed){
+
+                    s.playSound("explosion");
+                    level.explosionPlayed = true;
+                    v = level.getSound();
+                }
+
+            }else{
+
+                s.playSound(v);
+                v = level.getSound();
+            }
         }
+
+        s.resetAsNeeded();
     }
 
     public void paint(Graphics g){
@@ -365,6 +403,9 @@ public class Main extends JPanel{
 
                 circle = new Ellipse2D.Double(level.getPlanet(i).getX(), level.getPlanet(i).getY(), level.getPlanet(i).getWidth(), level.getPlanet(i).getHeight());
                 g2d.fill(circle);
+                Ellipse2D.Double ring = new Ellipse2D.Double(level.getPlanet(i).getX() + 10 - (level.getPlanet(i).getWidth() / 2), level.getPlanet(i).getY() + 10 - (level.getPlanet(i).getHeight() / 2), (level.getPlanet(i).getWidth() * 2) - 20, (level.getPlanet(i).getHeight() * 2) - 20);
+                g2d.setColor(Color.orange);
+                g2d.draw(ring);
             }
 
             for(int i = 0; i < level.getBHSize(); i++){
@@ -375,9 +416,7 @@ public class Main extends JPanel{
                 g2d.drawImage(black_hole, stationary, null);
             }
 
-            g2d.setColor(Color.WHITE);
-            circle = new Ellipse2D.Double(level.getEnd().getX(), level.getEnd().getY(), level.getEnd().getWidth(), level.getEnd().getHeight());
-            g2d.fill(circle);
+            g2d.drawImage(endpoint, (int)level.getEnd().getX(), (int)level.getEnd().getY(), null);
 
             g2d.setColor(Color.red);
             for(int i = 0; i < level.noBlocks(); i++){
@@ -444,16 +483,6 @@ public class Main extends JPanel{
 //            lt.rotate(gateangle, playerstartx + (level.getPlayer().getWidth() / 2), playerstarty + (level.getPlayer().getHeight() / 2));
 //            lt.translate(level.gatex, level.gatey);
                 g2d.drawImage(lasers, gate, null);
-            }
-
-            if(level.getPlayer().orbiting){
-
-                int x = (int)( level.getPlayer().getX() + (level.getPlayer().getWidth() / 2) + (40 * Math.cos(level.getPlayerRenderAngle() - (Math.PI / 2) )));
-
-                //             int y = (int) (level.getPlayer().getY() + (speed * Math.sin(level.playerangle + ((Math.PI / 2) * mod))) );
-                int y = (int) (level.getPlayer().getY() + (level.getPlayer().getHeight() / 2) + (40 * Math.sin(level.getPlayerRenderAngle() - (Math.PI / 2))) );
-                g2d.setColor(Color.red);
-                g2d.fillRect(x - 2, y - 2, 4, 4);
             }
 
             if(level.isFinished() == 1){
