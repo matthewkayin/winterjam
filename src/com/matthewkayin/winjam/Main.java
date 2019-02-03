@@ -43,7 +43,7 @@ public class Main extends JPanel{
     private Level level;
     private int currentLevel = 0;
     private int levels[][][] = new int[][][]{
-            { {0, 10, 10}, {1, 500, 500} },
+            { {0, 10, 10}, {1, 500, 500} , {4, 100, 100}, {4, 1000, 600} },
             { {0, 10, 10}, {1, 1000, 550}, {2, 500, 500} },
             { {0, 10, 10}, {1, 1000, 600}, {2, 500, 500}, {2, 200, 200} },
             { {0, 10, 10}, {1, 1250, 10}, {3, 700, 500}, {2, 100, 200} }
@@ -264,6 +264,14 @@ public class Main extends JPanel{
         for(int i = 0; i < level.noPlanets(); i++){
 
             circle = new Ellipse2D.Double(level.getPlanet(i).getX(), level.getPlanet(i).getY(), level.getPlanet(i).getWidth(), level.getPlanet(i).getHeight());
+            g2d.fill(circle);
+        }
+
+        g2d.setColor(Color.cyan);
+
+        for(int i = 0; i < level.getBHSize(); i++){
+
+            circle = new Ellipse2D.Double(level.getBlackHole(i).getX(), level.getBlackHole(i).getY(), level.getBlackHole(i).getWidth(), level.getBlackHole(i).getHeight());
             g2d.fill(circle);
         }
 
