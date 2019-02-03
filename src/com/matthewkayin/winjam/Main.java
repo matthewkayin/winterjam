@@ -279,6 +279,14 @@ public class Main extends JPanel{
             g2d.fill(circle);
         }
 
+        g2d.setColor(Color.cyan);
+
+        for(int i = 0; i < level.getBHSize(); i++){
+
+            circle = new Ellipse2D.Double(level.getBlackHole(i).getX(), level.getBlackHole(i).getY(), level.getBlackHole(i).getWidth(), level.getBlackHole(i).getHeight());
+            g2d.fill(circle);
+        }
+
         g2d.setColor(Color.WHITE);
         circle = new Ellipse2D.Double(level.getEnd().getX(), level.getEnd().getY(), level.getEnd().getWidth(), level.getEnd().getHeight());
         g2d.fill(circle);

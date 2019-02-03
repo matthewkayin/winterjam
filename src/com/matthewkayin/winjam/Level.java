@@ -14,12 +14,14 @@ public class Level{
     public boolean freeing = false;
     public double currPlanetX;
     public double currPlanetY;
+    public int blackHoleIndex = -1;
     private int state = 0; //0 is level is playing, 1 is level victory screen, 2 is level defeat screen, 3 is victory so return, 4 is loss so return
     public int gatex;
     public int gatey;
     public boolean haslaunched = false;
 
     public ArrayList<Entity> planets;
+    public ArrayList<Entity> blackHoles;
 
     public class Entity {
 
@@ -168,7 +170,9 @@ public class Level{
     public Level(int instructions[][]){
 
         planets = new ArrayList<Entity>();
+        blackHoles = new ArrayList<Entity>();
         int index = 0;
+        int holeIndex = 0;
 
         for(int i = 0; i < instructions.length; i++){
 
@@ -206,9 +210,10 @@ public class Level{
 
             if(instructions[i][0] == 4){
 
-                //create blackhole
-                //set xpos = instructions[i][1];
-                //set ypos = instruction[i][2];
+                blackHoles.add(new Entity());
+                blackHoles.get(holeIndex).setSize(50, 50);
+                blackHoles.get(holeIndex).setPos(instructions[i][1], instructions[i][2]);
+                holeIndex += 1;
             }
         }
     }
@@ -259,6 +264,43 @@ public class Level{
 
             state = 1;
             return;
+        }
+
+        //checking if we hit blackhole
+        if(freeing && blackHoleIndex != -1){
+
+            if(!player.getCollision(blackHoles.get(blackHoleIndex))){
+
+                freeing = false;
+                blackHoles.get(blackHoleIndex).orbiting = false;
+                blackHoleIndex = -1;
+            }
+        }else{
+
+            for(int i = 0; i < blackHoles.size(); i++){
+
+                double offset = ((blackHoles.get(i).getWidth() - (blackHoles.get(i).getWidth() / Math.sqrt(2))) / 2);
+
+                Rectangle rect = new Rectangle((int)(blackHoles.get(i).getX() + offset),
+                        (int)(blackHoles.get(i).getY() + offset),
+                        (int)(blackHoles.get(i).getWidth() / Math.sqrt(2)),
+                        (int)(blackHoles.get(i).getHeight() / Math.sqrt(2)));
+
+                if(player.getCollision(blackHoles.get(i)) && !freeing){
+
+                    if(i % 2 == 1){
+
+                        player.setPos(blackHoles.get(i - 1).getX(), blackHoles.get(i - 1).getY());
+                        blackHoleIndex = i - 1;
+                    }else{
+
+                        player.setPos(blackHoles.get(i + 1).getX(), blackHoles.get(i + 1).getY());
+                        blackHoleIndex = i + 1;
+                    }
+                    freeing = true;
+                    blackHoles.get(i).orbiting = true;
+                }
+            }
         }
 
         //orbiting shit dear god
@@ -379,6 +421,16 @@ public class Level{
     public int noPlanets(){
 
         return planets.size();
+    }
+
+    public Entity getBlackHole(int i){
+
+        return blackHoles.get(i);
+    }
+
+    public int getBHSize(){
+
+        return blackHoles.size();
     }
 
     public Entity getPlayer(){
