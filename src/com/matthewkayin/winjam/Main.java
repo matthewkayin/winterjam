@@ -38,7 +38,9 @@ public class Main extends JPanel{
     private int currentLevel = 0;
     private int levels[][][] = new int[][][]{
             { {0, 10, 10}, {1, 500, 500} },
-            { {0, 10, 10}, {1, 1000, 700}, {2, 500, 500} }
+            { {0, 10, 10}, {1, 1000, 550}, {2, 500, 500} },
+            { {0, 10, 10}, {1, 1000, 600}, {2, 500, 500}, {2, 200, 200} },
+            { {0, 10, 10}, {1, 1250, 10}, {3, 700, 500}, {2, 100, 200} }
     };
 
     public Main(){
@@ -274,7 +276,7 @@ public class Main extends JPanel{
     public static void main(String[] args){
 
         JFrame window = new JFrame("winter gam");
-        window.setSize(1280, 720);
+        window.setSize(1980, 1020);
         window.setResizable(false);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
