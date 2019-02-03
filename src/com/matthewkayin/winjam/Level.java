@@ -1,11 +1,18 @@
 package com.matthewkayin.winjam;
 
+import javax.swing.text.html.parser.Entity;
+import java.util.ArrayList;
+
 public class Level{
 
     public double playerangle;
     public double playeranglespeed;
     public double distfromplanet;
     public boolean freeing = false;
+    public double currPlanetX;
+    public double currPlanetY;
+
+    public ArrayList<Entity> planets;
 
     public class Entity {
 
@@ -113,19 +120,19 @@ public class Level{
         }
     }
 
-    private Entity planet;
-    private Entity bigplanet;
     private Entity player;
     private Entity end;
 
     public Level(){
 
-        planet = new Entity();
-        planet.setSize(200, 200);
-        planet.setPos(650, 450);
-        bigplanet = new Entity();
-        bigplanet.setSize(350, 350);
-        bigplanet.setPos(400, 25);
+        planets = new ArrayList<Entity>();
+
+        planets.add(new Entity());
+        planets.get(0).setPos(200, 200);
+        planets.get(0).setSize(200, 200);
+        planets.add(new Entity());
+        planets.get(1).setPos(500, 500);
+        planets.get(1).setSize(200, 200);
         player = new Entity();
         player.setSize(40, 40);
         player.setPos(400, 600);
@@ -200,14 +207,11 @@ public class Level{
 
     public void update() {
 
-        double centerx = planet.getX() + (planet.getWidth() / 2);
-        double centery = planet.getY() + (planet.getHeight() / 2);
-
         if(player.orbiting && !freeing){
 
             playerangle += playeranglespeed;
-            player.setX(centerx + distfromplanet*Math.cos(playerangle) - (player.getWidth() / 2));
-            player.setY(centery + distfromplanet*Math.sin(playerangle) - (player.getHeight() / 2));
+            player.setX(currPlanetX + distfromplanet*Math.cos(playerangle) - (player.getWidth() / 2));
+            player.setY(currPlanetY + distfromplanet*Math.sin(playerangle) - (player.getHeight() / 2));
 
         }else{
 
@@ -215,147 +219,104 @@ public class Level{
             player.incY(player.getVy());
         }
 
-        double planetRadius = (planet.getWidth() / 2) * 1.5;;
-        double playerx = player.getX() + (player.getWidth() / 2);
-        double playery = player.getY() + (player.getHeight() / 2);
-        double pdirx = playerx - centerx;
-        double pdiry = playery - centery;
-        double pdist = Math.sqrt((pdirx * pdirx) + (pdiry * pdiry));
-        double vmag = Math.sqrt((player.getVx() * player.getVx()) + (player.getVy() * player.getVy()));
-        double angle = Math.acos( (pdirx*player.getVx() + pdiry*player.getVy()) / (pdist * vmag) );
-        angle *= (180 / Math.PI);
-        angle = 180 - angle;
+        for(Entity planet : planets){
 
-        if(pdist <= planetRadius){
+            double centerx = planet.getX() + (planet.getWidth() / 2);
+            double centery = planet.getY() + (planet.getHeight() / 2);
+            double planetRadius = (planet.getWidth() / 2) * 1.5;;
+            double playerx = player.getX() + (player.getWidth() / 2);
+            double playery = player.getY() + (player.getHeight() / 2);
+            double pdirx = playerx - centerx;
+            double pdiry = playery - centery;
+            double pdist = Math.sqrt((pdirx * pdirx) + (pdiry * pdiry));
+            double vmag = Math.sqrt((player.getVx() * player.getVx()) + (player.getVy() * player.getVy()));
+            double angle = Math.acos( (pdirx*player.getVx() + pdiry*player.getVy()) / (pdist * vmag) );
+            angle *= (180 / Math.PI);
+            angle = 180 - angle;
 
-            if(!freeing){
+            if(pdist <= planetRadius){
 
-                if(angle >= 75){
+                if(!freeing){
 
-                    double oldvy = player.getVy();
-                    double oldvx = player.getVx();
-                    player.setVx(0);
-                    player.setVy(0);
-                    playerangle = Math.atan(pdiry / pdirx);
-                    playeranglespeed =  (2 * Math.PI) / ((2 * Math.PI * pdist) / vmag );
-                    int pasmod = 1;
-                    if(pdirx > 0){
+                    if(angle >= 75){
 
-                        if(pdiry < 0){
+                        double oldvy = player.getVy();
+                        double oldvx = player.getVx();
+                        player.setVx(0);
+                        player.setVy(0);
+                        playerangle = Math.atan(pdiry / pdirx);
+                        playeranglespeed =  (2 * Math.PI) / ((2 * Math.PI * pdist) / vmag );
+                        int pasmod = 1;
+                        if(pdirx > 0){
 
-                            if( oldvy < 0 || (oldvx < 0 && Math.abs(oldvx) > Math.abs(oldvy)) ){
+                            if(pdiry < 0){
 
-                                pasmod = -1;
+                                if( oldvy < 0 || (oldvx < 0 && Math.abs(oldvx) > Math.abs(oldvy)) ){
+
+                                    pasmod = -1;
+                                }
+
+                            }else{
+
+                                if( (Math.abs(oldvx) > Math.abs(oldvy) && oldvx > 0) || (Math.abs(oldvx) < Math.abs(oldvy) && oldvy < 0) ){
+
+                                    pasmod = -1;
+                                }
                             }
 
-                        }else{
+                        }if(pdirx < 0){
 
-                            if( (Math.abs(oldvx) > Math.abs(oldvy) && oldvx > 0) || (Math.abs(oldvx) < Math.abs(oldvy) && oldvy < 0) ){
+                            if(pdiry < 0){
 
-                                pasmod = -1;
+                                if( (oldvy > 0 && oldvx < 0) || (oldvy > 0 && Math.abs(oldvy) > Math.abs(oldvx)) ){
+
+                                    pasmod = -1;
+                                }
+
+                            }else{
+
+                                if( (oldvy > 0 && oldvx > 0) || (oldvx > 0 && Math.abs(oldvx) < Math.abs(oldvy)) ){
+
+                                    pasmod = -1;
+                                }
                             }
+
+                            playerangle += Math.PI;
                         }
-
-                    }if(pdirx < 0){
-
-                        if(pdiry < 0){
-
-                            if( (oldvy > 0 && oldvx < 0) || (oldvy > 0 && Math.abs(oldvy) > Math.abs(oldvx)) ){
-
-                                pasmod = -1;
-                            }
-
-                        }else{
-
-                            if( (oldvy > 0 && oldvx > 0) || (oldvx > 0 && Math.abs(oldvx) < Math.abs(oldvy)) ){
-
-                                pasmod = -1;
-                            }
-                        }
-
-                        playerangle += Math.PI;
+                        playeranglespeed *= pasmod;
+                        distfromplanet = pdist;
+                        currPlanetX = centerx;
+                        currPlanetY = centery;
+                        player.orbiting = true;
+                        planet.orbiting = true;
                     }
-                    playeranglespeed *= pasmod;
-                    distfromplanet = pdist;
-                    player.orbiting = true;
+                }
+
+            }else if(planet.orbiting){
+
+                if(freeing){
+
+                    freeing = false;
+                    player.orbiting = false;
+                    planet.orbiting = false;
                 }
             }
-
-        }else{
-
-            if(freeing){
-
-                freeing = false;
-                player.orbiting = false;
-            }
         }
-
-
-        /*
-        double planetRadius = (planet.getWidth() / 2) * 1.5;
-        double centerx = planet.getX() + (planet.getWidth() / 2);
-        double centery = planet.getY() + (planet.getHeight() / 2);
-        double playerx = player.getX() + (player.getWidth() / 2);
-        double playery = player.getY() + (player.getHeight() / 2);
-        double pdirx = Math.abs(playerx - centerx);
-        double pdiry = Math.abs(playery - centery);
-        double pdist = Math.sqrt((pdirx * pdirx) + (pdiry * pdiry));
-        double vmag = Math.sqrt((player.getVx() * player.getVx()) + (player.getVy() * player.getVy()));
-        double angle = Math.acos( (pdirx*player.getVx() + pdiry*player.getVy()) / (pdist * vmag) );
-        angle *= (180 / Math.PI);
-
-        if(pdist <= planetRadius && !player.orbiting){
-
-            if(angle <= 105 && angle >= 75){
-
-                double diff = pdist / planetRadius;
-                double nxdist = pdirx / diff;
-                double nydist = pdiry / diff;
-                player.setX(-(nxdist - pdirx) + player.getX());
-                player.setY(-(nydist - pdiry) + player.getY());
-
-                double g = 0.00005 * player.getMass() * planet.getMass() / (planetRadius * planetRadius);
-                playerx = player.getX() + (player.getWidth() / 2);
-                playery = player.getY() + (player.getHeight() / 2);
-                pdirx = playerx - centerx;
-                pdiry = playery - centery;
-                double vdirx = (pdirx * Math.cos(angle*(Math.PI/180))) - (pdiry * Math.sin(angle*(Math.PI/180)));
-                double vdiry = (pdirx * Math.sin(angle*(Math.PI/180))) + (pdiry * Math.cos(angle*(Math.PI/180)));
-                player.setVx(0);
-                player.setVy(0);
-                impulse(player.getX() + vdirx, player.getY() + vdiry, g);
-            }
-
-        }else if(player.orbiting){
-
-            double g = 0.00005 * player.getMass() * planet.getMass() / (planetRadius * planetRadius);
-            playerx = player.getX() + (player.getWidth() / 2);
-            playery = player.getY() + (player.getHeight() / 2);
-            pdirx = playerx - centerx;
-            pdiry = playery - centery;
-            double vdirx = (pdirx * Math.cos(angle*(Math.PI/180))) - (pdiry * Math.sin(angle*(Math.PI/180)));
-            double vdiry = (pdirx * Math.sin(angle*(Math.PI/180))) + (pdiry * Math.cos(angle*(Math.PI/180)));
-            player.setVx(0);
-            player.setVy(0);
-            impulse(player.getX() + vdirx, player.getY() + vdiry, g);
-        }
-
-        if*/
     }
 
-    public Entity getPlanet(){
+    public Entity getPlanet(int i){
 
-        return planet;
+        return planets.get(i);
+    }
+
+    public int noPlanets(){
+
+        return planets.size();
     }
 
     public Entity getPlayer(){
 
         return player;
-    }
-
-    public Entity getBigplanet(){
-
-        return bigplanet;
     }
 
     public Entity getEnd(){
