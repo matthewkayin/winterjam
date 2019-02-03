@@ -257,7 +257,15 @@ public class Level{
         //orbiting shit dear god
         for(Entity planet : planets){
 
-            if(player.getCollision(planet)){
+
+            double offset = ((planet.getWidth() - (planet.getWidth() / Math.sqrt(2))) / 2);
+
+            Rectangle rect = new Rectangle((int)(planet.getX() + offset),
+                    (int)(planet.getY() + offset),
+                    (int)(planet.getHeight() / Math.sqrt(2)),
+                    (int)(planet.getHeight() / Math.sqrt(2)));
+
+            if(player.getCollision(rect)){
 
                 state = 2;
                 return;
