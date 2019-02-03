@@ -27,6 +27,7 @@ public class Level{
         private double h;
         private double ax;
         private double ay;
+        private final int totalNumberOfObjects = 4;
         public boolean orbiting = false;
 
         public Entity() {
@@ -150,6 +151,47 @@ public class Level{
         end = new Entity();
         end.setSize(50, 50);
         end.setPos(50, 50);
+    }
+
+    public Level(int instructions[][], int numPar){
+
+        for(int i = 0; i < numPar; i++){
+
+            if(instructions[i][0] == 0){
+
+                player = new Entity();
+                player.setSize(40, 40);
+                player.setPos(instructions[i][1], instructions[i][2]);
+            }
+
+            if(instructions[i][0] == 1){
+
+                end = new Entity;
+                end.setSize(50, 50);
+                end.setPos(instructions[i][1], instructions[i][2]);
+            }
+
+            if(instructions[i][0] == 2){
+
+                //create planet
+                //set xpos = instructions[i][1];
+                //set ypos = instruction[i][2];
+            }
+
+            if(instructions[i][0] == 3){
+
+                //create planet
+                //set xpos = instructions[i][1];
+                //set ypos = instruction[i][2];
+            }
+
+            if(instructions[i][0] == 4){
+
+                //create blackhole
+                //set xpos = instructions[i][1];
+                //set ypos = instruction[i][2];
+            }
+        }
     }
 
     public void impulse(double x, double y, double speed){
